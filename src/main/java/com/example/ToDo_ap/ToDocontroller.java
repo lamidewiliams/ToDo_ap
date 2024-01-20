@@ -2,10 +2,8 @@ package com.example.ToDo_ap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +17,9 @@ public class ToDocontroller {
         this.todoservice= todoservice;
     }
     @GetMapping({"/", "viewToDoList"})
-    public String viewAllToDoitems(Model model){
+    public String viewAllToDoitems(Model model, @ModelAttribute("message")String message){
         model.addAttribute("list", todoservice.getAllToDoitems());
+        model.addAttribute("msg", message);
         return "viewToDoList";/*method best for model view*/
     }
    /* @GetMapping
@@ -29,26 +28,41 @@ public class ToDocontroller {
         /this method is used for RESTful API /
     }*/
     @PostMapping("/updateToDoStatus/{id}")
-    public  String updateToDOstatus(@PathVariable Long id){
+    public  String updateToDOstatus(@PathVariable Long id, RedirectAttributes redirectAttributes){
         if (todoservice.updateStatus(id)) {
+            redirectAttributes.addFlashAttribute("message","update success");
             return  "redirect:/viewToDoList";
         }
-        return "";
+        redirectAttributes.addFlashAttribute("message","update Failure");
+        return "redirect:/viewToDoList";
     }
-    @GetMapping
-    public String addToDo(){
-
+    @GetMapping("/addToDoItem")
+    public String addToDo(Model model){
+        model.addAttribute("todoList", new ToDoList());
+        return "AddToDoItem";
     }
-    @PostMapping
-    public  String saveToDO() {
-
+    @PostMapping("/saveToDoItem")
+    public  String saveToDO(ToDoList toDoList,RedirectAttributes redirectAttributes) {
+        if(todoservice.saveOrUpdateToDoItem(toDoList)){
+            redirectAttributes.addFlashAttribute("message","save successfull");
+            return "redirect:/viewToDoList";
+        }
+        redirectAttributes.addFlashAttribute("message","save Failed")
+        return  "redirect:/addToDOItem";
     }
-    @GetMapping
-    public String editToDo(){
-
+    @GetMapping("/editToDoitem")
+    public String editToDoItem(@PathVariable Long id, Model model){
+        model.addAttribute("todoList",todoservice.getAllToDoitems());
+        return "EditToDoItem";
     }
-    @GetMapping
-    public String editToDoItem(){
+    @PostMapping("/editSaveToDoItem")
+    public String editToDoItem(ToDoList toDoList,RedirectAttributes redirectAttributes) {
+        if(todoservice.saveOrUpdateToDoItem(toDoList)){
+            redirectAttributes.addFlashAttribute("message","save successfull");
+            return "redirect:/viewToDoList";
+        }
+        redirectAttributes.addFlashAttribute("message","save Failed")
+        return  "redirect:/addToDOItem";
 
     }
     @PostMapping
