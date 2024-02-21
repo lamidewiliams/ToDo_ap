@@ -46,7 +46,7 @@ public class ToDocontroller {
             redirectAttributes.addFlashAttribute("message","save successfull");
             return "redirect:/viewToDoList";
         }
-        redirectAttributes.addFlashAttribute("message","save Failed")
+        redirectAttributes.addFlashAttribute("message","save Failed");
         return  "redirect:/addToDOItem";
     }
     @GetMapping("/editToDoitem")
@@ -60,16 +60,18 @@ public class ToDocontroller {
             redirectAttributes.addFlashAttribute("message","save successfull");
             return "redirect:/viewToDoList";
         }
-        redirectAttributes.addFlashAttribute("message","save Failed")
+        redirectAttributes.addFlashAttribute("message","save Failed");
         return  "redirect:/addToDOItem";
 
     }
-    @PostMapping
-    public String editsaveToDOItem(){
 
-    }
-    @GetMapping
-    public String deleteToDoItem(){
+    @GetMapping("/deleteToDoItem/{id}")
+    public String deleteToDoItem(@PathVariable Long id, RedirectAttributes redirectAttributes){
+        if(todoservice.deleteToDoItems(id)){
+            redirectAttributes.addFlashAttribute("message","delete successfull");
+        }
+        redirectAttributes.addFlashAttribute("message","delete Failed");
+        return  ("redirect:/viewToDoList");
 
     }
 }
