@@ -18,7 +18,7 @@ public class ToDocontroller {
     @GetMapping({"/", "viewToDoList"})
     public String viewAllToDoitems(Model model, @ModelAttribute("message")String message){
         model.addAttribute("list", todoservice.getAllToDoitems());
-        model.addAttribute("msg", message);
+        model.addAttribute("message", message);
         return "viewToDoList";/*method best for model view*/
     }
    /* @GetMapping
